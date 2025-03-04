@@ -2,7 +2,9 @@ package com.administration.messaging;
 
 import com.administration.enums.Messenger;
 import com.administration.enums.Status;
+import com.administration.user.User;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -11,7 +13,7 @@ public class MessageObj{
     private String messageText;
     private final Long messageID;
     private Status messageStatus;
-    private Set<Long> userSelected;
+    private Map<User, Status> userSelected;
     private final Messenger messenger;
 
     public MessageObj(Messenger messenger){
@@ -19,7 +21,7 @@ public class MessageObj{
         this.messenger = messenger;
     }
 
-    public MessageObj(Set<Long> userSelected, Messenger messenger, Status messageStatus, String messageText){
+    public MessageObj(Map<User, Status> userSelected, Messenger messenger, Status messageStatus, String messageText){
         this.messageText = messageText;
         this.messageStatus = messageStatus;
         this.userSelected = userSelected;
@@ -39,7 +41,7 @@ public class MessageObj{
         return messageID;
     }
 
-    public Set<Long> getUserSelected() {
+    public Map<User, Status> getUserSelected() {
         return userSelected;
     }
 
@@ -55,7 +57,7 @@ public class MessageObj{
         this.messageStatus = messageStatus;
     }
 
-    public void setUserSelected(Set<Long> userSelected) {
+    public void setUserSelected(Map<User, Status> userSelected) {
         this.userSelected = userSelected;
     }
 

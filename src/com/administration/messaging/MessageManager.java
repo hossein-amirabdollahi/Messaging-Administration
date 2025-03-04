@@ -8,27 +8,19 @@ import com.administration.user.DefaultUsers;
 import com.administration.user.User;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MessageManager {
 
-    private final Map<Long, User> users = new HashMap<>();
-    private final Map<Long, MessageObj> allMessages = new HashMap<>();
+    private final Map<Long, User> users = new ConcurrentHashMap<>();
+    private final Map<Long, MessageObj> allMessages = new ConcurrentHashMap<>();
     private static final Scanner scr = new Scanner(System.in);
 
 
     public void createMessage() {
-        Set<Long> theUsers = new HashSet<>();
+        Map<User, Status> theUsers = new HashMap<>();
         String input;
         MessageCreator messageCreator = new MessageCreator(users, allMessages);
-
-        while (true){
-            try {
-                theUsers = messageCreator.defUsers();
-                break;
-            }catch (BadInputException e){
-                System.out.println("Error: " + e.getMessage());
-            }
-        }
 
         Messenger messengerType = null;
         while (true){
@@ -48,6 +40,16 @@ public class MessageManager {
                 System.out.println("Error: " + e.getMessage());
             }
         }
+
+        while (true){
+            try {
+                theUsers = messageCreator.defUsers();
+                break;
+            }catch (BadInputException e){
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+
         MessageObj messageObj = new MessageObj(theUsers, messengerType, Status.QUEUED, input);
         allMessages.put(messageObj.getMessageID(), messageObj);
     }

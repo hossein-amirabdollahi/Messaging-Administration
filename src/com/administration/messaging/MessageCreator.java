@@ -1,13 +1,11 @@
 package com.administration.messaging;
 
 import com.administration.enums.Messenger;
+import com.administration.enums.Status;
 import com.administration.exceptions.BadInputException;
 import com.administration.user.User;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 public class MessageCreator {
     private final Scanner scanner = new Scanner(System.in);
@@ -19,21 +17,22 @@ public class MessageCreator {
         this.allMessages = allMessages;
     }
 
-    public Set<Long> defUsers() throws BadInputException {
-        Set<Long> forUsers = new HashSet<>();
+    public Map<User, Status> defUsers() throws BadInputException {
+        Map<User, Status> forUsers = new HashMap<>();
+        Collection<User> allUsers = new HashSet<>();
         String input;
         System.out.print("Do you want to send the message for all users?(yes/no): ");
         input = scanner.nextLine().trim();
         if (input.equalsIgnoreCase("yes")) {
-            forUsers = users.keySet();
+            users.values().forEach(user -> {forUsers.put(user, Status.QUEUED);});
             return forUsers;
         } else if (input.equalsIgnoreCase("no")) {
             System.out.print("Then please enter the ID number of users," +
                     "\nthat do you want to sent the message for them:(1 2 3 4 ...) ");
-            input = scanner.nextLine();
+            input = scanner.nextLine().trim();
             String[] userList = input.split(" ");
             for (String element : userList) {
-                forUsers.add(Long.parseLong(element));
+                forUsers.put(users.get(Long.parseLong(element)), Status.QUEUED);
             }
             return forUsers;
         }
