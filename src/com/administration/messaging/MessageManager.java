@@ -16,21 +16,62 @@ public class MessageManager {
     private final Map<Long, MessageObj> allMessages = new ConcurrentHashMap<>();
     private static final Scanner scr = new Scanner(System.in);
 
-
-    public void createMessage() {
-        Map<User, Status> theUsers = new HashMap<>();
-        String input;
+    public MessageObj sendMessage(long messageID) throws ExistenceException {
+        MessageScheduler messageScheduler = new MessageScheduler();
         MessageCreator messageCreator = new MessageCreator(users, allMessages);
 
-        Messenger messengerType = null;
+
+        if (!allMessages.containsKey(messageID)){
+            throw new ExistenceException("This message with ID["
+                    + messageID + "] doesn't exist!");
+        }
+        MessageObj theMessage = allMessages.get(messageID);
+        if (theMessage.getMessageStatus() == Status.BLOCKED){
+            throw new ExistenceException("This message with ID[" +
+                    theMessage.getMessageID() + "] is blocked message");
+        }else if (theMessage.getMessageStatus() == Status.CANCELED){
+            throw new ExistenceException("This message with ID[" +
+                    theMessage.getMessageID() + "] is canceled message");
+        }else if (theMessage.getMessageStatus() != Status.QUEUED){
+            throw new ExistenceException("This message with ID[" +
+                    theMessage.getMessageID() + "] is already sent");
+        }
+
+        Messenger messengerType;
         while (true){
             try {
-               messengerType = messageCreator.defMessenger();
-               break;
+                messengerType = messageCreator.defMessenger();
+                break;
             }catch (BadInputException e){
                 System.out.println("Error: " + e.getMessage());
             }
         }
+
+        Set<User> theUsers;
+        while (true){
+            try {
+                theUsers = messageCreator.defUsers();
+                break;
+            }catch (BadInputException e){
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+
+        long delayMinutes = messageCreator.defDelay();
+
+        for (User user : theUsers){
+            theMessage.updateUserStatus(user, Status.QUEUED);
+        }
+
+        theMessage.setMessenger(messengerType);
+        theMessage.setMessageStatus(Status.ACTIVE);
+        messageScheduler.scheduleMessage(theMessage, delayMinutes, theUsers);
+        return theMessage;
+    }
+
+    public void createMessage() {
+        String input;
+        MessageCreator messageCreator = new MessageCreator(users, allMessages);
 
         while (true){
             try {
@@ -41,17 +82,18 @@ public class MessageManager {
             }
         }
 
-        while (true){
-            try {
-                theUsers = messageCreator.defUsers();
-                break;
-            }catch (BadInputException e){
-                System.out.println("Error: " + e.getMessage());
-            }
+        MessageObj messageObj;
+        ValidationChecker validation = new ValidationChecker();
+        if (validation.messageRestrictionValidation(input)){
+            System.err.println("Your message blocked\nbecause your message contains restricted words!!!");
+            messageObj = new MessageObj(input, Status.BLOCKED);
+
+        }else{
+            messageObj = new MessageObj(input);
         }
 
-        MessageObj messageObj = new MessageObj(theUsers, messengerType, Status.QUEUED, input);
         allMessages.put(messageObj.getMessageID(), messageObj);
+        System.out.println("Your message created successfully with [ ID : " + messageObj.getMessageID() + "]\n");
     }
 
     public void addUser() throws BadInputException {
@@ -61,11 +103,15 @@ public class MessageManager {
             throw new BadInputException("Invalid name input!!\nEnter your name correctly please");
         System.out.print("Enter your phone number: ");
         String inputPhoneNum = scr.nextLine();
+        ValidationChecker validation = new ValidationChecker();
+        if (!validation.phoneNumberValidation(inputPhoneNum)){
+            throw new BadInputException("Invalid phone number input!!\nEnter your phone number correctly please(like: 09151234567)");
+        }
         if (inputPhoneNum.trim().isEmpty())
-            throw new BadInputException("Invalid phone number input!!\nEnter your name correctly please");
+            throw new BadInputException("Invalid phone number input!!\nEnter your phone number correctly please");
         User newUser = new User(inputName, inputPhoneNum);
         users.put(newUser.getUserID(), newUser);
-        System.out.printf("User[name: %s, ID: %d] added successfully\n",newUser.getName(), newUser.getUserID());
+        System.out.printf("User[name: %s, ID: %d] added successfully%n",newUser.getName(), newUser.getUserID());
     }
 
     public void addDefaultUsers() {
@@ -96,7 +142,8 @@ public class MessageManager {
                 throw new ExistenceException("This message is already canceled!");
             } else if (theMessage.getMessageStatus() == Status.BLOCKED) {
                 throw new ExistenceException("This message is already blocked!");
-            } else if (theMessage.getMessageStatus() == Status.QUEUED) {
+            } else if (theMessage.getMessageStatus() == Status.QUEUED ||
+                    theMessage.getMessageStatus() == Status.ACTIVE) {
                 theMessage.setMessageStatus(Status.CANCELED);
             } else {
                 throw new ExistenceException("This message is already sent!");
@@ -141,28 +188,8 @@ public class MessageManager {
         }
         for (MessageObj messageObj : allMessages.values()) {
             System.out.println(messageObj.toString());
-            System.out.println(messageObj.getMessageID());
+            System.out.println("[" + messageObj.getMessageID() + "]");
         }
-    }
-
-    public MessageObj sendMessage(long messageID) throws ExistenceException {
-        if (!allMessages.containsKey(messageID)){
-            throw new ExistenceException("This message with ID["
-                    + messageID + "] doesn't exist!");
-        }
-        MessageObj theMessage = allMessages.get(messageID);
-        if (theMessage.getMessageStatus() == Status.BLOCKED){
-            throw new ExistenceException("This message with ID[" +
-                    theMessage + "] is blocked message");
-        }else if (theMessage.getMessageStatus() == Status.CANCELED){
-            throw new ExistenceException("This message with ID[" +
-                    theMessage + "] is canceled message");
-        }else if (theMessage.getMessageStatus() != Status.QUEUED){
-            throw new ExistenceException("This message with ID[" +
-                    theMessage + "] is already sent");
-        }
-        theMessage.setMessageStatus(Status.SENT);
-        return theMessage;
     }
 
     public Map<Long, User> getUsers() {

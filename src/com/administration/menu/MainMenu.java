@@ -16,11 +16,38 @@ public class MainMenu {
         messageManager.addDefaultUsers();
     }
 
-    public void defineUser() {
+    public void funcCancelMessage() {
+        long messageID;
+        System.out.print("Enter the ID number of your message please: ");
+        String input = scanner.nextLine().trim();
+        messageID = Long.parseLong(input);
         try {
-            messageManager.addUser();
-        }catch (BadInputException e){
+            messageManager.cancelMessage(messageID);
+        }catch (ExistenceException e){
             System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    public void funcSendMessage() {
+        long messageID;
+        System.out.print("Enter the ID number of your message please: ");
+        String input = scanner.nextLine().trim();
+        messageID = Long.parseLong(input);
+        try {
+            messageManager.sendMessage(messageID);
+        }catch (ExistenceException e){
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    public void defineUser() {
+        while (true){
+            try {
+                messageManager.addUser();
+                break;
+            } catch (BadInputException e) {
+                System.out.println("Error: " + e.getMessage());
+            }
         }
     }
 

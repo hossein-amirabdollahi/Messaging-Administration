@@ -13,9 +13,11 @@ public class Controller {
             System.out.println("2.Define new Message");
             System.out.println("3.Search and display message");
             System.out.println("4.Display all messages");
-            System.out.println("5.Display archive");
+            System.out.println("5.Display archive ( blocked / canceled )");
             System.out.println("6.Display sent messages");
-            System.out.println("7.Exit");
+            System.out.println("7.Send message");
+            System.out.println("8.Cancel message");
+            System.out.println("9.Exit");
 
             System.out.print("Enter your choice please: ");
             int input = scanner.nextInt();
@@ -41,6 +43,12 @@ public class Controller {
                     mainMenu.displayAllSentMessages();
                     break;
                 case 7:
+                    mainMenu.funcSendMessage();
+                    break;
+                case 8:
+                    mainMenu.funcCancelMessage();
+                    break;
+                case 9:
                     System.exit(0);
                 default:
                     System.out.println("Invalid input\nPlease enter valid number");

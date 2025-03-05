@@ -28,11 +28,10 @@ public class User {
 
     @Override
     public String toString() {
-        return "com.administration.user.User{" +
+        return
                 "userID=" + userID +
-                ", name='" + name + '\'' +
-                ", phoneNumber=" + phoneNumber +
-                '}';
+                ", name= " + name +
+                ", phoneNumber=" + phoneNumber;
     }
 
     public String getName() {

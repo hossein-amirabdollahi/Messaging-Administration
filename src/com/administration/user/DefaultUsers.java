@@ -7,11 +7,11 @@ public class DefaultUsers {
     private static final Map<Long, User> defaultUsers = new HashMap<>();
 
     static {
-        User user1 = new User("Hossein", "9234656789");
-        User user2 = new User("Ali", "9894561423");
-        User user3 = new User("Hasan", "9418852963");
-        User user4 = new User("Mohamad", "9271456987");
-        User user5 = new User("Javad", "9529363741");
+        User user1 = new User("Hossein", "09234656789");
+        User user2 = new User("Ali", "09894561423");
+        User user3 = new User("Hasan", "09418852963");
+        User user4 = new User("Mohamad", "09271456987");
+        User user5 = new User("Javad", "09529363741");
 
         defaultUsers.put(user1.getUserID(), user1);
         defaultUsers.put(user2.getUserID(), user2);

@@ -4,6 +4,7 @@ import com.administration.enums.Messenger;
 import com.administration.enums.Status;
 import com.administration.user.User;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -13,20 +14,62 @@ public class MessageObj{
     private String messageText;
     private final Long messageID;
     private Status messageStatus;
-    private Map<User, Status> userSelected;
-    private final Messenger messenger;
+    private final Map<User, Status> userSelected;
+    private Messenger messenger;
 
-    public MessageObj(Messenger messenger){
+    public MessageObj(String messageText){
+        this.messageText = messageText;
+        this.messageStatus = Status.QUEUED;
+        this.userSelected = new  HashMap<>();
         messageID = ++messageCounter;
-        this.messenger = messenger;
     }
 
-    public MessageObj(Map<User, Status> userSelected, Messenger messenger, Status messageStatus, String messageText){
+    public MessageObj(String messageText, Status status){
         this.messageText = messageText;
-        this.messageStatus = messageStatus;
-        this.userSelected = userSelected;
+        this.messageStatus = status;
+        this.userSelected = new  HashMap<>();
         messageID = ++messageCounter;
-        this.messenger = messenger;
+    }
+
+//    public MessageObj(Map<User, Status> userSelected, Messenger messenger, Status messageStatus, String messageText){
+//        this.messageText = messageText;
+//        this.messageStatus = messageStatus;
+//        this.userSelected = userSelected;
+//        messageID = ++messageCounter;
+//        this.messenger = messenger;
+//    }
+
+    private String displayUsers(){
+        String display = "";
+        for (User key : userSelected.keySet()){
+            display += "\n" + key.toString() + " Status: " + userSelected.get(key);
+        }
+        return display;
+
+    }
+
+    @Override
+    public String toString() {
+        String allUsers;
+        return
+                "messageText='" + messageText + '\'' + "\n" +
+                ", messageID = " + messageID +
+                ", messageStatus = " + messageStatus +
+                ", messenger = " + messenger +
+                ", userSelected =\n" + this.displayUsers() +
+                "\n";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        MessageObj that = (MessageObj) o;
+        return Objects.equals(messageID, that.messageID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(messageID);
     }
 
     public String getMessageText() {
@@ -57,31 +100,11 @@ public class MessageObj{
         this.messageStatus = messageStatus;
     }
 
-    public void setUserSelected(Map<User, Status> userSelected) {
-        this.userSelected = userSelected;
+    public void updateUserStatus(User user, Status status) {
+        userSelected.put(user, status);
     }
 
-    @Override
-    public String toString() {
-        String allUsers;
-        return "{" +
-                "messageText='" + messageText + '\'' + "\n" +
-                ", messageID=" + messageID +
-                ", messageStatus=" + messageStatus +
-                ", messenger=" + messenger +
-                ", userSelected=\n" + userSelected +
-                "}\n";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        MessageObj that = (MessageObj) o;
-        return Objects.equals(messageID, that.messageID);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(messageID);
+    public void setMessenger(Messenger messenger){
+        this.messenger = messenger;
     }
 }
