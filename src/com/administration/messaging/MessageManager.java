@@ -192,6 +192,16 @@ public class MessageManager {
         }
     }
 
+    public void viewAllUsers() throws ExistenceException{
+        if(users.isEmpty()){
+            throw new ExistenceException("Doesn't exist any users");
+        }
+        for (User user : users.values()) {
+            System.out.println(user.toString());
+            System.out.println("[" + user.getUserID() + "]");
+        }
+    }
+
     public Map<Long, User> getUsers() {
         return users;
     }

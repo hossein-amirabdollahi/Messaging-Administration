@@ -17,7 +17,8 @@ public class Controller {
             System.out.println("6.Display sent messages");
             System.out.println("7.Send message");
             System.out.println("8.Cancel message");
-            System.out.println("9.Exit");
+            System.out.println("9.Display all users");
+            System.out.println("10.Exit");
 
             System.out.print("Enter your choice please: ");
             int input = scanner.nextInt();
@@ -49,6 +50,9 @@ public class Controller {
                     mainMenu.funcCancelMessage();
                     break;
                 case 9:
+                    mainMenu.displayAllUsers();
+                    break;
+                case 10:
                     System.exit(0);
                 default:
                     System.out.println("Invalid input\nPlease enter valid number");

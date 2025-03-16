@@ -77,6 +77,14 @@ public class MainMenu {
         }
     }
 
+    public void displayAllUsers(){
+        try {
+            messageManager.viewAllUsers();
+        }catch (ExistenceException e){
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
     public void displayArchive(){
         Set<MessageObj> archive;
         try {
